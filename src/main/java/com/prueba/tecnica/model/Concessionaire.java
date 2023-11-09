@@ -1,27 +1,29 @@
 package com.prueba.tecnica.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
-@Table
-@Getter
-@Setter
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class Concessionaire {
 
-    @Column
-    private Integer id;
+    @Id
+    private Integer mfrId;
 
     @Column
     private String country;
 
     @Column
-    private String name;
+    private String mfrCommonName;
+
+
+    @Column
+    private String mfrName;
 
     @OneToMany(mappedBy = "concessionaire", cascade = CascadeType.ALL)
     private List<VehicleTypes> vehicleTypes;
