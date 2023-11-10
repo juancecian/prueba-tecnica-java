@@ -3,11 +3,11 @@ package com.prueba.tecnica.services.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.prueba.tecnica.dto.ApiResponseDto;
-import com.prueba.tecnica.dto.ConcessionaireDto;
+import com.prueba.tecnica.dto.ManufacturerDto;
 import com.prueba.tecnica.dto.VehicleTypesDto;
-import com.prueba.tecnica.model.Concessionaire;
+import com.prueba.tecnica.model.Manufacturer;
 import com.prueba.tecnica.model.VehicleTypes;
-import com.prueba.tecnica.services.ConcessionaireRepository;
+import com.prueba.tecnica.services.ManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -18,30 +18,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ConcessionaireService {
+public class ManufacturerService {
 
     @Autowired
-    private final ConcessionaireRepository concessionaireRepository;
+    private final ManufacturerRepository manufacturerRepository;
     private final RestTemplate restTemplate;
 
-    public ConcessionaireService(ConcessionaireRepository concessionaireRepository, RestTemplate restTemplate) {
-        this.concessionaireRepository = concessionaireRepository;
+    public ManufacturerService(ManufacturerRepository manufacturerRepository, RestTemplate restTemplate) {
+        this.manufacturerRepository = manufacturerRepository;
         this.restTemplate = restTemplate;
     }
 
     @Value("${api.url}")
     private String URL_ENDPOINT;
 
-    public List<ConcessionaireDto> findAllManufacturers(String format) {
-        List<ConcessionaireDto> response = new ArrayList<>();
-        long countDatabase = this.concessionaireRepository.count();
+    public List<ManufacturerDto> findAllManufacturers(String format, String commonName) throws Exception {
+        List<ManufacturerDto> response = new ArrayList<>();
+        long countDatabase = this.manufacturerRepository.count();
 
         if (countDatabase > 0) {
 
-            List<Concessionaire> concessionaires = this.concessionaireRepository.findAll();
+            List<Manufacturer> concessionaires = commonName == null ? this.manufacturerRepository.findAll() : this.manufacturerRepository.findByMfrCommonName(commonName);
 
-            for (Concessionaire concessionaire: concessionaires) {
-                ConcessionaireDto concessionaireDto = ConcessionaireDto.builder()
+            if (concessionaires.isEmpty()) {
+                throw new Exception("Not result for query");
+            }
+
+            for (Manufacturer concessionaire: concessionaires) {
+                ManufacturerDto manufacturerDto = ManufacturerDto.builder()
                         .Mfr_ID(concessionaire.getMfrId())
                         .Mfr_Name(concessionaire.getMfrName())
                         .Mfr_CommonName(concessionaire.getMfrCommonName())
@@ -49,10 +53,10 @@ public class ConcessionaireService {
                         .VehicleTypes(buildVehicleTypes(concessionaire.getVehicleTypes()))
                         .build();
 
-                response.add(concessionaireDto);
+                response.add(manufacturerDto);
             }
         } else {
-            ResponseEntity<String> res = restTemplate.getForEntity(URL_ENDPOINT + " /vehicles/getallmanufacturers?format=" + format, String.class);
+            ResponseEntity<String> res = restTemplate.getForEntity(URL_ENDPOINT + " /vehicles/getallmanufacturers?format=json", String.class);
             String jsonResponse = res.getBody();
 
             Gson gson = new GsonBuilder().create();
@@ -66,15 +70,15 @@ public class ConcessionaireService {
         return response;
     }
 
-    private void persistDataInDatabase(List<ConcessionaireDto> results) {
-        for (ConcessionaireDto concessionary: results) {
-            Concessionaire con = Concessionaire.builder()
+    private void persistDataInDatabase(List<ManufacturerDto> results) {
+        for (ManufacturerDto concessionary: results) {
+            Manufacturer con = Manufacturer.builder()
                     .mfrId(concessionary.getMfr_ID())
                     .mfrName(concessionary.getMfr_Name())
                     .mfrCommonName(concessionary.getMfr_CommonName())
                     .country(concessionary.getCountry())
                     .build();
-            this.concessionaireRepository.saveAndFlush(con);
+            this.manufacturerRepository.saveAndFlush(con);
         }
     }
 

@@ -1,9 +1,6 @@
 package com.prueba.tecnica.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +22,6 @@ public class ApiResponseDto {
     private String searchCriteria;
 
     @SerializedName("Results")
-    private List<ConcessionaireDto> results;
+    private List<ManufacturerDto> results;
 
 }

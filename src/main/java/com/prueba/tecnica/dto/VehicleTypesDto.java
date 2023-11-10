@@ -7,9 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 public class VehicleTypesDto {
 
-    private String IsPrimary;
+    private Boolean IsPrimary;
 
     private String Name;
 
-    private ConcessionaireDto concessionaire;
+    private ManufacturerDto concessionaire;
 }

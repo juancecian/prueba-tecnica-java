@@ -16,12 +16,12 @@ public class VehicleTypes {
     private Long id;
 
     @Column
-    private String isPrimary;
+    private Boolean isPrimary;
 
     @Column
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "concessionaire_id")
-    private Concessionaire concessionaire;
+    @JoinColumn(name = "manufacturer_id")
+    private Manufacturer manufacturer;
 }

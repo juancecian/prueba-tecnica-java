@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Concessionaire {
+public class Manufacturer {
 
     @Id
     private Integer mfrId;
@@ -25,6 +25,6 @@ public class Concessionaire {
     @Column
     private String mfrName;
 
-    @OneToMany(mappedBy = "concessionaire", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL)
     private List<VehicleTypes> vehicleTypes;
 }
